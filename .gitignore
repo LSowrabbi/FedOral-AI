@@ -1,0 +1,32 @@
+# Papers and PDFs — local reference only
+papers/
+
+# Python virtual environment
+fedoral-env/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Mac system files
+.DS_Store
+
+# Environment variables
+.env
+
+# Data folder (datasets are too large for GitHub)
+data/raw/
+
+# Model checkpoints (large binary files)
+models/checkpoints/
+*.pth
+*.pt
+*.ckpt
+
+# Results images (optional — you may want to keep some)
+# results/
