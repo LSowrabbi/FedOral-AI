@@ -16,14 +16,16 @@ in current screening protocols. This project aims to build ML tools that
 detect lesions early, across underserved and non-traditional risk populations.
 
 ## Status
-🚧 Work in progress — building centralized baseline model (Phase 1)
 
-## Planned Components
-- [ ] Centralized CNN baseline (oral lesion classifier)
-- [ ] Federated learning setup using Flower (flwr)
-- [ ] Distributed node simulation via Docker
-- [ ] Differential privacy layer
+- [x] Development environment setup (PyTorch 2.8, Flower, Opacus, MPS GPU)
+- [x] Dataset loaded — 1,700 oral cancer images (CANCER / NON CANCER)
+- [x] Data exploration notebook with visualizations
+- [x] ResNet-18 model definition — forward pass working on Apple Silicon GPU
+- [ ] Training loop with early stopping
 - [ ] Grad-CAM explainability visualizations
+- [ ] Federated learning system (3 hospital nodes)
+- [ ] Differential privacy (Opacus DP-SGD)
+- [ ] arXiv preprint submission
 
 ## Tech Stack
 Python · PyTorch · Flower (flwr) · Docker · OpenCV
