@@ -17,11 +17,13 @@ detect lesions early, across underserved and non-traditional risk populations.
 
 ## Status
 
-- [x] Development environment setup (PyTorch 2.8, Flower, Opacus, MPS GPU)
+- [x] Development environment (PyTorch 2.8, Flower, Opacus, MPS GPU)
 - [x] Dataset loaded — 1,700 oral cancer images (CANCER / NON CANCER)
 - [x] Data exploration notebook with visualizations
-- [x] ResNet-18 model definition — forward pass working on Apple Silicon GPU
-- [ ] Training loop with early stopping
+- [x] ResNet-18 model — forward pass on Apple Silicon GPU
+- [x] Training loop with early stopping + weighted loss
+- [x] Centralized baseline — 88.6% accuracy, AUC-ROC 0.958
+- [ ] EfficientNet-B0 comparison
 - [ ] Grad-CAM explainability visualizations
 - [ ] Federated learning system (3 hospital nodes)
 - [ ] Differential privacy (Opacus DP-SGD)
