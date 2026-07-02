@@ -1,4 +1,5 @@
 import os
+import random
 from PIL import Image
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
@@ -40,6 +41,10 @@ class OralCancerDataset(Dataset):
                         self.samples.append(
                             (os.path.join(class_dir, img_file), label)
                         )
+
+        #  Shuffle before splitting
+        random.seed(42)  # fixed seed for reproducible splits
+        random.shuffle(self.samples)
 
         # Split dataset: 70% train, 15% val, 15% test
         total = len(self.samples)
