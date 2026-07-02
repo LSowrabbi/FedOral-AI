@@ -10,6 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data.dataset import OralCancerDataset, get_transforms
 from models.resnet_baseline import OralCancerResNet
+from models.efficientnet_baseline import OralCancerEfficientNet
 from utils.device import get_device
 
 
@@ -173,7 +174,7 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
           f"CANCER={weight_cancer:.3f}")
 
     # Model
-    model = OralCancerResNet(
+    model = OralCancerEfficientNet(
         num_classes=2,
         freeze_backbone=freeze_backbone
     ).to(device)
