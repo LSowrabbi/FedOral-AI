@@ -33,10 +33,10 @@ Device: Apple Silicon MPS · Dataset: 1,700 images · Split: 70/15/15 · Seed: 4
 - [x] Training loop with early stopping + weighted loss
 - [x] Centralized baseline — 88.6% accuracy, AUC-ROC 0.958
 - [x] EfficientNet-B0 comparison
-- [ ] Grad-CAM explainability visualizations
+- [x] Grad-CAM explainability visualizations
 - [ ] Federated learning system (3 hospital nodes)
 - [ ] Differential privacy (Opacus DP-SGD)
-- [ ] arXiv preprint submission
+
 
 ## Tech Stack
 Python · PyTorch · Flower (flwr) · Docker · OpenCV
