@@ -4,6 +4,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import random as rnd
 from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -28,7 +29,7 @@ def denormalize(tensor):
 
 def generate_gradcam_figure(
         model, dataset, device,
-        num_samples=5, class_name="CANCER",
+        num_samples=20, class_name="CANCER",
         save_path="results/gradcam/"):
 
     os.makedirs(save_path, exist_ok=True)
@@ -47,13 +48,22 @@ def generate_gradcam_figure(
     for param in model_cpu.parameters():
         param.requires_grad = True
 
-    # Collect samples of the requested class
-    samples = []
-    for img, lbl in dataset:
-        if lbl == label_idx:
-            samples.append((img, lbl))
-        if len(samples) >= num_samples:
-            break
+    # Collect samples spread across the test set
+    all_class_samples = [
+        (img, lbl) for img, lbl in dataset
+        if lbl == label_idx
+    ]
+
+    # Pick samples spread across the dataset for diversity
+    # Select from beginning, middle and end of test set
+    total = len(all_class_samples)
+    if total >= num_samples:
+        # Pick evenly spaced samples for diversity
+        indices = [int(i * total / num_samples)
+                for i in range(num_samples)]
+        samples = [all_class_samples[i] for i in indices]
+    else:
+        samples = all_class_samples
 
     if not samples:
         print(f"No {class_name} images found in dataset")
@@ -84,6 +94,11 @@ def generate_gradcam_figure(
                 pred_label = class_labels[pred_idx]
                 true_label = class_labels[label]
 
+            # Log prediction result for each image
+            print(f"Image {i+1}: True={true_label} Pred={pred_label} "
+            f"Conf={probs[pred_idx]*100:.1f}% "
+            f"{'✓ CORRECT' if pred_idx==label else '✗ FALSE NEG'}")
+    
             # Original image
             original = denormalize(img_tensor)
 
@@ -167,15 +182,16 @@ if __name__ == "__main__":
     print("\n── Generating Grad-CAM for CANCER images ──")
     generate_gradcam_figure(
         model, test_ds, device,
-        num_samples=5, class_name="CANCER",
+        num_samples=20, class_name="CANCER",
         save_path="results/gradcam/"
     )
 
     print("\n── Generating Grad-CAM for NON CANCER images ──")
     generate_gradcam_figure(
         model, test_ds, device,
-        num_samples=5, class_name="NON CANCER",
+        num_samples=20, class_name="NON CANCER",
         save_path="results/gradcam/"
     )
 
     print("\nGrad-CAM complete — check results/gradcam/")
+
