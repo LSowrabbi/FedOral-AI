@@ -144,8 +144,13 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
     # Dataset & DataLoaders
     root_dirs = [
         'data/raw/oral-cancer-dataset/Oral Cancer/Oral Cancer Dataset',
-        'data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/'
-        'OC Dataset kaggle new'
+        'data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/OC Dataset kaggle new',
+        'data/raw/kaggle-oral-ashen/train',
+        'data/raw/kaggle-oral-ashen/val',
+        'data/raw/kaggle-oral-ashen/test',
+        'data/raw/vidit-oral/oral_cancer/train',
+        'data/raw/vidit-oral/oral_cancer/val',
+        'data/raw/vidit-oral/oral_cancer/test',
     ]
 
     train_ds = OralCancerDataset(root_dirs, 'train', get_transforms('train'))
@@ -162,16 +167,17 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
                                shuffle=False, num_workers=2,
                                pin_memory=True)
 
-    # Class weights (handle imbalance)
-    # CANCER: 1000 images, NON CANCER: 700 images
-    total = 1700
-    weight_non_cancer = total / (2 * 700)   # 1.214
-    weight_cancer     = total / (2 * 1000)  # 0.850
+    # Handle imbalance in class weights
+    # Updated weights for combined dataset (14,532 images)
+    # NON CANCER: 43.4% · CANCER: 56.6%
+    total = 14532
+    weight_non_cancer = total / (2 * 6308)   # 1.151
+    weight_cancer     = total / (2 * 8224)   # 0.884
     class_weights = torch.tensor(
         [weight_non_cancer, weight_cancer]).to(device)
 
     print(f"Class weights: NON CANCER={weight_non_cancer:.3f}, "
-          f"CANCER={weight_cancer:.3f}")
+        f"CANCER={weight_cancer:.3f}")
 
     # Model
     model = OralCancerEfficientNet(

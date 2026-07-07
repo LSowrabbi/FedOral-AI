@@ -24,17 +24,21 @@ class OralCancerDataset(Dataset):
         self.samples = []  # list of (image_path, label) tuples
         self.transform = transform
         self.split = split
-        self.classes = ['NON CANCER', 'CANCER']
-        self.class_to_idx = {'NON CANCER': 0, 'CANCER': 1}
+        self.classes = ['CANCER', 'NON CANCER']
+        # Support multiple naming conventions across datasets
+        self.class_to_idx = {
+            'NON CANCER': 0, 'CANCER': 1,   # original dataset
+            'Normal': 0,     'OSCC': 1,     # Rahman/ashenafifasilkebede
+            'normal': 0,     'oscc': 1,     # lowercase variants
+            'Benign': 0,     'Malignant': 1 # other common naming
+        }
 
         # Load images from all root directories
         for root_dir in root_dirs:
-            for class_name in self.classes:
+            for class_name, label in self.class_to_idx.items():
                 class_dir = os.path.join(root_dir, class_name)
                 if not os.path.exists(class_dir):
-                    print(f"Warning: {class_dir} not found, skipping.")
-                    continue
-                label = self.class_to_idx[class_name]
+                    continue  # skip (many names won't exist)
                 for img_file in sorted(os.listdir(class_dir)):
                     if img_file.lower().endswith(
                             ('.jpg', '.jpeg', '.png', '.bmp')):
@@ -109,17 +113,21 @@ def get_transforms(split='train'):
 if __name__ == '__main__':
     root_dirs = [
         'data/raw/oral-cancer-dataset/Oral Cancer/Oral Cancer Dataset',
-        'data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/OC Dataset kaggle new'
+        'data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/OC Dataset kaggle new',
+        'data/raw/kaggle-oral-ashen/train',
+        'data/raw/kaggle-oral-ashen/val',
+        'data/raw/kaggle-oral-ashen/test',
+        'data/raw/vidit-oral/oral_cancer/train',
+        'data/raw/vidit-oral/oral_cancer/val',
+        'data/raw/vidit-oral/oral_cancer/test',
     ]
 
-    for split in ['train', 'val', 'test']:
-        dataset = OralCancerDataset(
-            root_dirs=root_dirs,
-            split=split,
-            transform=get_transforms(split)
-        )
+    train_ds = OralCancerDataset(root_dirs, 'train', get_transforms('train'))
+    val_ds   = OralCancerDataset(root_dirs, 'val',   get_transforms('val'))
+    test_ds  = OralCancerDataset(root_dirs, 'test',  get_transforms('test'))
 
-    print(f"\nTotal images: {1700}")
-    print(f"Classes: {dataset.classes}")
-    print(f"Sample item shape: {dataset[0][0].shape}")
-    print(f"Sample label: {dataset[0][1]}")
+    total = len(train_ds) + len(val_ds) + len(test_ds)
+    print(f"\nTotal images:  {total}")
+    print(f"Classes:       {train_ds.classes}")
+    print(f"Sample shape:  {train_ds[0][0].shape}")
+    print(f"Sample label:  {train_ds[0][1]}")
