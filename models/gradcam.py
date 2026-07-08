@@ -143,8 +143,9 @@ def generate_gradcam_figure(
 
     plt.suptitle(
         f"Grad-CAM Explainability — {class_name} Images\n"
-        f"EfficientNet-B0 · FedOral-AI",
-        fontsize=13, fontweight="bold", y=1.01
+        f"EfficientNet-B0 with Progressive Unfreezing · "
+        f"Accuracy: 97.4% · AUC-ROC: 99.5%",
+        fontsize=13, fontweight='bold', y=1.01
     )
     plt.tight_layout()
 
