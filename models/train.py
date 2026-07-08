@@ -143,14 +143,13 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
 
     # Dataset & DataLoaders
     root_dirs = [
+        # Original ORCA dataset — 1,700 images
         'data/raw/oral-cancer-dataset/Oral Cancer/Oral Cancer Dataset',
         'data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/OC Dataset kaggle new',
+        # ashenafifasilkebede (Rahman et al. source) — 5,192 images
         'data/raw/kaggle-oral-ashen/train',
         'data/raw/kaggle-oral-ashen/val',
         'data/raw/kaggle-oral-ashen/test',
-        'data/raw/vidit-oral/oral_cancer/train',
-        'data/raw/vidit-oral/oral_cancer/val',
-        'data/raw/vidit-oral/oral_cancer/test',
     ]
 
     train_ds = OralCancerDataset(root_dirs, 'train', get_transforms('train'))
@@ -166,16 +165,23 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
     test_loader  = DataLoader(test_ds, batch_size=batch_size,
                                shuffle=False, num_workers=2,
                                pin_memory=True)
+ 
+    # Dynamically compute class weights from training set
+    from collections import Counter
+    train_labels = [label for _, label in train_ds.samples]
+    label_counts = Counter(train_labels)
+    total = len(train_labels)
+    n_non_cancer = label_counts[0]
+    n_cancer     = label_counts[1]
 
-    # Handle imbalance in class weights
-    # Updated weights for combined dataset (14,532 images)
-    # NON CANCER: 43.4% · CANCER: 56.6%
-    total = 14532
-    weight_non_cancer = total / (2 * 6308)   # 1.151
-    weight_cancer     = total / (2 * 8224)   # 0.884
+    weight_non_cancer = total / (2 * n_non_cancer)
+    weight_cancer     = total / (2 * n_cancer)
     class_weights = torch.tensor(
         [weight_non_cancer, weight_cancer]).to(device)
 
+    print(f"Dataset: {total} train images")
+    print(f"  NON CANCER: {n_non_cancer} ({n_non_cancer/total*100:.1f}%)")
+    print(f"  CANCER:     {n_cancer} ({n_cancer/total*100:.1f}%)")
     print(f"Class weights: NON CANCER={weight_non_cancer:.3f}, "
         f"CANCER={weight_cancer:.3f}")
 
@@ -228,6 +234,20 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
     for epoch in range(1, num_epochs + 1):
         print(f"Epoch {epoch}/{num_epochs}")
         print(f"{'-'*40}")
+
+        # Progressive unfreezing — unfreeze backbone at epoch 10
+        if epoch == 10:
+            model.unfreeze_backbone()
+            # Reset optimizer to include all parameters
+            optimizer = torch.optim.Adam(
+                model.parameters(),
+                lr=0.0001  # lower LR for fine-tuning
+            )
+            # Reset scheduler with new optimizer
+            scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+                optimizer, mode='min', factor=0.5, patience=3
+            )
+            print("Backbone unfrozen — full fine-tuning at lr=0.0001")
 
         # Train
         t_loss, t_acc, t_prec, t_rec, t_f1, t_auc = \
@@ -316,7 +336,7 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
 # Entry point 
 if __name__ == '__main__':
     train(
-        num_epochs=30,
+        num_epochs=50,
         batch_size=32,
         learning_rate=0.001,
         freeze_backbone=True

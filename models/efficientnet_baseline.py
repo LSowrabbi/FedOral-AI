@@ -65,13 +65,13 @@ if __name__ == '__main__':
 
     device = get_device()
 
-    print("\n── Building OralCancerEfficientNet ──")
+    print("\nBuilding OralCancerEfficientNet")
     model = OralCancerEfficientNet(num_classes=2, freeze_backbone=True)
     model = model.to(device)
     model.get_param_count()
 
     # Test forward pass
-    print("\n── Testing forward pass ──")
+    print("\nTesting forward pass")
     dummy_batch = torch.randn(4, 3, 224, 224).to(device)
     output = model(dummy_batch)
     print(f"Input shape:  {dummy_batch.shape}")

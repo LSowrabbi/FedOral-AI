@@ -48,11 +48,15 @@ def generate_gradcam_figure(
     for param in model_cpu.parameters():
         param.requires_grad = True
 
-    # Collect samples spread across the test set
+    # Collect diverse samples spread across test set
     all_class_samples = [
         (img, lbl) for img, lbl in dataset
         if lbl == label_idx
     ]
+
+    # Spread selection across dataset for visual diversity
+    total_available = len(all_class_samples)
+    print(f"  Available {class_name} images: {total_available}")
 
     # Pick samples spread across the dataset for diversity
     # Select from beginning, middle and end of test set
@@ -171,27 +175,32 @@ if __name__ == "__main__":
 
     # Load test dataset
     root_dirs = [
+        # Original ORCA dataset — 1,700 images
         "data/raw/oral-cancer-dataset/Oral Cancer/Oral Cancer Dataset",
-        "data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/"
-        "OC Dataset kaggle new"
+        "data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/OC Dataset kaggle new",
+        # ashenafifasilkebede (Rahman et al. source) — 5,192 images
+        "data/raw/kaggle-oral-ashen/train",
+        "data/raw/kaggle-oral-ashen/val",
+        "data/raw/kaggle-oral-ashen/test",
     ]
+
     test_ds = OralCancerDataset(
         root_dirs, "test", get_transforms("test")
     )
 
-    print("\n── Generating Grad-CAM for CANCER images ──")
+    print("\nGenerating Grad-CAM for CANCER images")
     generate_gradcam_figure(
         model, test_ds, device,
         num_samples=20, class_name="CANCER",
         save_path="results/gradcam/"
     )
 
-    print("\n── Generating Grad-CAM for NON CANCER images ──")
+    print("\nGenerating Grad-CAM for NON CANCER images")
     generate_gradcam_figure(
         model, test_ds, device,
         num_samples=20, class_name="NON CANCER",
         save_path="results/gradcam/"
     )
 
-    print("\nGrad-CAM complete — check results/gradcam/")
+    print("\nGrad-CAM complete: heatmap added in results/gradcam/")
 

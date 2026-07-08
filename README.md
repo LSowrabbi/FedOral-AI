@@ -15,11 +15,15 @@ chronic mechanical irritation from dental prosthetics — are underrepresented
 in current screening protocols. This project aims to build ML tools that 
 detect lesions early, across underserved and non-traditional risk populations.
 
-## Results (Centralized Baseline)
-| Model | Accuracy | Precision | Recall | F1 | AUC-ROC | Parameters |
-|-------|----------|-----------|--------|----|---------|------------|
-| ResNet-18 | 88.6% | 92.7% | 88.6% | 90.6% | 95.8% | 11.3M |
-| EfficientNet-B0 | **93.7%** | **96.7%** | **93.0%** | **94.8%** | **98.9%** | 4.3M |
+## Results (Centralized Baseline — EfficientNet-B0)
+| Model | Dataset | Accuracy | Precision | Recall | F1 | AUC-ROC |
+|-------|---------|----------|-----------|--------|----|---------|
+| ResNet-18 | 1,700 images | 88.6% | 92.7% | 88.6% | 90.6% | 95.8% |
+| EfficientNet-B0 (frozen) | 6,892 images | 91.2% | 91.1% | 92.3% | 91.7% | 96.7% |
+| **EfficientNet-B0 (progressive unfreeze)** | **6,892 images** | **97.4%** | **97.8%** | **97.3%** | **97.5%** | **99.5%** |
+
+Training: 50 epochs · Progressive unfreezing at epoch 10 · lr=0.001→0.0001
+Dataset: ORCA (1,700) + ashenafifasilkebede/Rahman et al. (5,192) · Deduplicated · Seed=42
 
 Winner: EfficientNet-B0 → selected as backbone for federated learning system
 Device: Apple Silicon MPS · Dataset: 1,700 images · Split: 70/15/15 · Seed: 42

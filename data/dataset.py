@@ -29,7 +29,6 @@ class OralCancerDataset(Dataset):
         self.class_to_idx = {
             'NON CANCER': 0, 'CANCER': 1,   # original dataset
             'Normal': 0,     'OSCC': 1,     # Rahman/ashenafifasilkebede
-            'normal': 0,     'oscc': 1,     # lowercase variants
             'Benign': 0,     'Malignant': 1 # other common naming
         }
 
@@ -112,14 +111,13 @@ def get_transforms(split='train'):
 
 if __name__ == '__main__':
     root_dirs = [
+        # Original ORCA dataset — 1,700 images
         'data/raw/oral-cancer-dataset/Oral Cancer/Oral Cancer Dataset',
         'data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/OC Dataset kaggle new',
+        # ashenafifasilkebede — 5,192 images
         'data/raw/kaggle-oral-ashen/train',
         'data/raw/kaggle-oral-ashen/val',
         'data/raw/kaggle-oral-ashen/test',
-        'data/raw/vidit-oral/oral_cancer/train',
-        'data/raw/vidit-oral/oral_cancer/val',
-        'data/raw/vidit-oral/oral_cancer/test',
     ]
 
     train_ds = OralCancerDataset(root_dirs, 'train', get_transforms('train'))
