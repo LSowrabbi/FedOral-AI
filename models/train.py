@@ -5,12 +5,13 @@ import time
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
+from collections import Counter
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data.dataset import OralCancerDataset, get_transforms
 from models.resnet_baseline import OralCancerResNet
-from models.efficientnet_baseline import OralCancerEfficientNet
+from models.mobilenet_baseline import OralCancerMobileNet
 from utils.device import get_device
 
 
@@ -167,7 +168,6 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
                                pin_memory=True)
  
     # Dynamically compute class weights from training set
-    from collections import Counter
     train_labels = [label for _, label in train_ds.samples]
     label_counts = Counter(train_labels)
     total = len(train_labels)
@@ -186,11 +186,10 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
         f"CANCER={weight_cancer:.3f}")
 
     # Model
-    model = OralCancerEfficientNet(
+    model = OralCancerMobileNet(
         num_classes=2,
         freeze_backbone=freeze_backbone
     ).to(device)
-    model.get_param_count()
 
     # Loss & Optimizer
     criterion = nn.CrossEntropyLoss(weight=class_weights)
@@ -208,7 +207,7 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
     # Early stopping
     early_stopping = EarlyStopping(
         patience=5,
-        checkpoint_path='models/checkpoints/best_model.pth'
+        checkpoint_path='models/checkpoints/best_model_mobilenet.pth'
     )
 
     # CSV logging
@@ -302,7 +301,7 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
     # Final test evaluation
     print(f"\nLoading best checkpoint for test evaluation...")
     model.load_state_dict(torch.load(
-        'models/checkpoints/best_model.pth',
+        'models/checkpoints/best_model_mobilenet.pth',
         map_location=device))
 
     test_loss, test_acc, test_prec, test_rec, test_f1, test_auc = \
