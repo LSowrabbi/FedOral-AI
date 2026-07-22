@@ -27,9 +27,9 @@ class OralCancerDataset(Dataset):
         self.classes = ['CANCER', 'NON CANCER']
         # Support multiple naming conventions across datasets
         self.class_to_idx = {
-            'NON CANCER': 0, 'CANCER': 1,   # original dataset
-            'Normal': 0,     'OSCC': 1,     # Rahman/ashenafifasilkebede
-            'Benign': 0,     'Malignant': 1 # other common naming
+            'NON CANCER': 0, 'CANCER': 1,
+            'Normal': 0,     'OSCC': 1,
+            'Benign': 0,     'Malignant': 1
         }
 
         # Load images from all root directories
@@ -111,13 +111,8 @@ def get_transforms(split='train'):
 
 if __name__ == '__main__':
     root_dirs = [
-        # Original ORCA dataset — 1,700 images
-        'data/raw/oral-cancer-dataset/Oral Cancer/Oral Cancer Dataset',
-        'data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/OC Dataset kaggle new',
-        # ashenafifasilkebede — 5,192 images
-        'data/raw/kaggle-oral-ashen/train',
-        'data/raw/kaggle-oral-ashen/val',
-        'data/raw/kaggle-oral-ashen/test',
+        'data/raw/orca-deduplicated',
+        'data/raw/ashen-deduplicated',
     ]
 
     train_ds = OralCancerDataset(root_dirs, 'train', get_transforms('train'))

@@ -101,7 +101,7 @@ def generate_gradcam_figure(
             # Log prediction result for each image
             print(f"Image {i+1}: True={true_label} Pred={pred_label} "
             f"Conf={probs[pred_idx]*100:.1f}% "
-            f"{'✓ CORRECT' if pred_idx==label else '✗ FALSE NEG'}")
+            f"{'CORRECT' if pred_idx==label else 'FALSE NEG'}")
     
             # Original image
             original = denormalize(img_tensor)
@@ -132,7 +132,7 @@ def generate_gradcam_figure(
             axes[i][1].axis("off")
 
             # Column 3: Overlay + prediction
-            correct = "✓" if pred_idx == label else "✗"
+            correct = "Y" if pred_idx == label else "X"
             axes[i][2].imshow(overlaid)
             axes[i][2].set_title(
                 f"Overlay {correct}\n"
@@ -176,13 +176,8 @@ if __name__ == "__main__":
 
     # Load test dataset
     root_dirs = [
-        # Original ORCA dataset — 1,700 images
-        "data/raw/oral-cancer-dataset/Oral Cancer/Oral Cancer Dataset",
-        "data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/OC Dataset kaggle new",
-        # ashenafifasilkebede (Rahman et al. source) — 5,192 images
-        "data/raw/kaggle-oral-ashen/train",
-        "data/raw/kaggle-oral-ashen/val",
-        "data/raw/kaggle-oral-ashen/test",
+        'data/raw/orca-deduplicated',
+        'data/raw/ashen-deduplicated',
     ]
 
     test_ds = OralCancerDataset(

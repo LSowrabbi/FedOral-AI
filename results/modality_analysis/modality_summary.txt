@@ -1,24 +1,24 @@
 MODALITY ANALYSIS — FedOral-AI
 =======================================================
 
-Total test samples: 1034
-Clinical photographs: 245
-Histopathology slides: 789
+Total test samples: 926
+Clinical photographs: 166
+Histopathology slides: 760
 
 CLINICAL PHOTOGRAPHS (ORCA)
 -------------------------------------------------------
-  n: 245
-  accuracy: 0.963265306122449
-  precision: 0.9857142857142858
-  recall: 0.9517241379310345
-  f1: 0.968421052631579
-  auc: 0.987448275862069
+  n: 166
+  accuracy: 0.963855421686747
+  precision: 0.9893617021276596
+  recall: 0.9489795918367347
+  f1: 0.96875
+  auc: 0.9926470588235294
 
 HISTOPATHOLOGY SLIDES (ashenafifasilkebede)
 -------------------------------------------------------
-  n: 789
-  accuracy: 0.9771863117870723
-  precision: 0.9751861042183623
-  recall: 0.9800498753117207
-  f1: 0.9776119402985075
-  auc: 0.9975833611846672
+  n: 760
+  accuracy: 0.9789473684210527
+  precision: 0.9796954314720813
+  recall: 0.9796954314720813
+  f1: 0.9796954314720813
+  auc: 0.9970319824692796

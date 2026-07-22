@@ -20,8 +20,8 @@ model.eval()
 
 # Load test set
 root_dirs = [
-    'data/raw/oral-cancer-dataset/Oral Cancer/Oral Cancer Dataset',
-    'data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/OC Dataset kaggle new'
+    'data/raw/orca-deduplicated',
+    'data/raw/ashen-deduplicated',
 ]
 test_ds = OralCancerDataset(root_dirs, 'test', get_transforms('test'))
 test_loader = DataLoader(test_ds, batch_size=32, shuffle=False)

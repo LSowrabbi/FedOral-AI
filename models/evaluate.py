@@ -28,11 +28,8 @@ def evaluate_and_plot(checkpoint_path='models/checkpoints/best_model.pth'):
 
     # Load test set
     root_dirs = [
-        'data/raw/oral-cancer-dataset/Oral Cancer/Oral Cancer Dataset',
-        'data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/OC Dataset kaggle new',
-        'data/raw/kaggle-oral-ashen/train',
-        'data/raw/kaggle-oral-ashen/val',
-        'data/raw/kaggle-oral-ashen/test',
+        'data/raw/orca-deduplicated',
+        'data/raw/ashen-deduplicated',
     ]
     test_ds = OralCancerDataset(
         root_dirs, 'test', get_transforms('test')
@@ -76,9 +73,10 @@ def evaluate_and_plot(checkpoint_path='models/checkpoints/best_model.pth'):
                fontsize=12)
     plt.ylabel('True Positive Rate\n(Sensitivity / Recall)',
                fontsize=12)
+
     plt.title(
-        'ROC Curve — FedOral-AI Oral Cancer Detection\n'
-        'EfficientNet-B0 · 6,892 images · Seed=42',
+        f'ROC Curve — FedOral-AI Oral Cancer Detection\n'
+        f'EfficientNet-B0 · 6,170 images · Seed=42',
         fontsize=13, fontweight='bold'
     )
     plt.legend(loc='lower right', fontsize=11)

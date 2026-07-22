@@ -81,11 +81,8 @@ if __name__ == '__main__':
 
     # Load full test dataset
     root_dirs = [
-        'data/raw/oral-cancer-dataset/Oral Cancer/Oral Cancer Dataset',
-        'data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/OC Dataset kaggle new',
-        'data/raw/kaggle-oral-ashen/train',
-        'data/raw/kaggle-oral-ashen/val',
-        'data/raw/kaggle-oral-ashen/test',
+        'data/raw/orca-deduplicated',
+        'data/raw/ashen-deduplicated',
     ]
     test_ds = OralCancerDataset(
         root_dirs, 'test', get_transforms('test')
@@ -95,11 +92,11 @@ if __name__ == '__main__':
     # Split test samples by modality based on source folder
     clinical_samples = [
         (path, label) for path, label in test_ds.samples
-        if 'oral-cancer-dataset' in path
+        if 'orca-deduplicated' in path
     ]
     histo_samples = [
         (path, label) for path, label in test_ds.samples
-        if 'kaggle-oral-ashen' in path
+        if 'ashen-deduplicated' in path
     ]
 
     print(f"\nTotal test samples: {len(test_ds.samples)}")

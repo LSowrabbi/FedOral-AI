@@ -1,7 +1,7 @@
 TEST SET RESULTS
 ========================================
-Accuracy  : 0.9613
-Precision : 0.9567
-Recall    : 0.9707
-F1 Score  : 0.9636
-AUC-ROC   : 0.9928
+Accuracy  : 0.9514
+Precision : 0.9848
+Recall    : 0.9228
+F1 Score  : 0.9528
+AUC-ROC   : 0.9941

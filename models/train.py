@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from data.dataset import OralCancerDataset, get_transforms
 from models.resnet_baseline import OralCancerResNet
+from models.efficientnet_baseline import OralCancerEfficientNet
 from models.mobilenet_baseline import OralCancerMobileNet
 from utils.device import get_device
 
@@ -137,20 +138,15 @@ def validate(model, loader, criterion, device):
 
 
 # Main training loop
-def train(num_epochs=30, batch_size=32, learning_rate=0.001,
+def train(num_epochs=50, batch_size=32, learning_rate=0.001,
           freeze_backbone=True):
 
     device = get_device()
 
     # Dataset & DataLoaders
     root_dirs = [
-        # Original ORCA dataset — 1,700 images
-        'data/raw/oral-cancer-dataset/Oral Cancer/Oral Cancer Dataset',
-        'data/raw/oral-cancer-dataset/Oral cancer Dataset 2.0/OC Dataset kaggle new',
-        # ashenafifasilkebede (Rahman et al. source) — 5,192 images
-        'data/raw/kaggle-oral-ashen/train',
-        'data/raw/kaggle-oral-ashen/val',
-        'data/raw/kaggle-oral-ashen/test',
+        'data/raw/orca-deduplicated',
+        'data/raw/ashen-deduplicated',
     ]
 
     train_ds = OralCancerDataset(root_dirs, 'train', get_transforms('train'))
@@ -171,13 +167,21 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
     train_labels = [label for _, label in train_ds.samples]
     label_counts = Counter(train_labels)
     total = len(train_labels)
-    n_non_cancer = label_counts[0]
-    n_cancer     = label_counts[1]
+
+    idx_non_cancer = train_ds.class_to_idx['NON CANCER']
+    idx_cancer     = train_ds.class_to_idx['CANCER']
+
+    n_non_cancer = label_counts[idx_non_cancer]
+    n_cancer     = label_counts[idx_cancer]
 
     weight_non_cancer = total / (2 * n_non_cancer)
     weight_cancer     = total / (2 * n_cancer)
-    class_weights = torch.tensor(
-        [weight_non_cancer, weight_cancer]).to(device)
+
+    # Build weights tensor in the correct index order
+    class_weights = torch.zeros(2)
+    class_weights[idx_non_cancer] = weight_non_cancer
+    class_weights[idx_cancer]     = weight_cancer
+    class_weights = class_weights.to(device)
 
     print(f"Dataset: {total} train images")
     print(f"  NON CANCER: {n_non_cancer} ({n_non_cancer/total*100:.1f}%)")
@@ -186,10 +190,12 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
         f"CANCER={weight_cancer:.3f}")
 
     # Model
-    model = OralCancerMobileNet(
+    model = OralCancerResNet(
         num_classes=2,
         freeze_backbone=freeze_backbone
     ).to(device)
+    model.get_param_count()
+    print(f"Training model: {model.__class__.__name__}")
 
     # Loss & Optimizer
     criterion = nn.CrossEntropyLoss(weight=class_weights)
@@ -207,7 +213,7 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
     # Early stopping
     early_stopping = EarlyStopping(
         patience=5,
-        checkpoint_path='models/checkpoints/best_model_mobilenet.pth'
+        checkpoint_path='models/checkpoints/best_model_resnet.pth'
     )
 
     # CSV logging
@@ -301,7 +307,7 @@ def train(num_epochs=30, batch_size=32, learning_rate=0.001,
     # Final test evaluation
     print(f"\nLoading best checkpoint for test evaluation...")
     model.load_state_dict(torch.load(
-        'models/checkpoints/best_model_mobilenet.pth',
+        'models/checkpoints/best_model_resnet.pth',
         map_location=device))
 
     test_loss, test_acc, test_prec, test_rec, test_f1, test_auc = \
